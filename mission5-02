@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="asano.css">
+    <title>mission_5-01</title>
+
+</head>
+
+<body>
+
+<div id="headline" style="border:#ffb6c1 solid 1px;border-left:#ffb6c1 solid 20px;padding:20px;background:#fff;">
+   ✌️ 23卒　就活掲示板✌️️</div>
+
+</body>
+<?php
+
+//データベースに接続
+    $dsn='データベース名';//データベース名など
+    $user = 'ユーザー名'; //ユーザー名
+    $password = 'パスワード';//パスワード
+    
+    $pdo=new PDO($dsn, $user, $password, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING));
+    
+//テーブル作成
+    $sql = "CREATE TABLE IF NOT EXISTS ASANOtb"
+    ." ("
+    . "id INT AUTO_INCREMENT PRIMARY KEY,"
+    . "name char(32),"
+    . "comment TEXT,"
+    . "date TIMESTAMP,"
+    . "password TEXT"
+    .");";
+    $stmt = $pdo->query($sql);
+    
+// //データベースのテーブル一覧表示
+
+// $sql ='SHOW TABLES';
+//     $result = $pdo -> query($sql);
+//     foreach ($result as $row){
+//         echo $row[0];
+//         echo '<br>';
+//     }
+//     echo "<hr>";
+    
+// //詳細表示
+//   $sql ='SHOW CREATE TABLE ASANOtb';
+//     $result = $pdo -> query($sql);
+//     foreach ($result as $row){
+//         echo $row[1];
+//     }
+//     echo "<hr>";
+
+// データ受け取り
+
+// $name=$_POST["name"];//名前
+// $str=$_POST["str"];//投稿
+// $nums=$_POST["nums"];//削除番号
+// $number=$_POST["number"];//編集番号
+// $pass=$_POST["pass"];//パスワード
+// $numspass=$_POST["numspass"];//削除のパスワード
+// $numberpass=$_POST["numberpass"];//編集番号のパスワード
+
+//___ パスワード取得（削除）___________________________________________________________________________
+
+if(!empty($_POST["nums"]))
+{
+    $nums=$_POST["nums"];
+
+
+if(!empty($_POST["numspass"]))
+{
+    $numspass=$_POST["numspass"];
+
+
+
+if(!empty($nums))
+{
+    
+    $dsn='mysql:dbname=tb230992db;host=localhost';//データベース名など
+    $user = 'tb-230992'; //ユーザー名
+    $password = '2t9XXpQrsc';//パスワード
+    
+    $pdo=new PDO($dsn, $user, $password, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING));
+    
+    $id=$nums;
+    $stmt= $pdo -> prepare("SELECT * FROM ASANOtb WHERE id = :id");//??
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $res=$stmt->execute();
+    
+    if($res)//??
+    {
+     $data=$stmt->fetch();
+    }
+    $numspass2=$data['password'];
+}
+}
+}
+
+//___パスワード取得(編集)_________________________________________________________
+if(!empty($_POST["number"]))
+{
+    $number=$_POST["number"];
+//編集番号
+if(!empty($_POST["numberpass"]))
+{
+    $numberpass=$_POST["numberpass"];
+//編集番号のパスワード
+
+if(!empty($numberpass)){//パスワードが入力されている場合
+    
+//データベースに接続
+    $dsn='データベース名';//データベース名など
+    $user = 'ユーザー名'; //ユーザー名
+    $password = 'パスワード';//パスワード
+    
+    $pdo=new PDO($dsn, $user, $password, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING));  
+    $id=$_POST['number'];
+    $stmt= $pdo -> prepare("SELECT * FROM ASANOtb WHERE id = :id");//??
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $res=$stmt->execute();
+    
+    if($res)
+    {
+        $data=$stmt->fetch();
+    }
+    if($numberpass==$data['password'])//編集番号のパスがパスワードと一致した時
+    {
+        $number1=$data['id'];
+        $name2=$data['name'];
+        $str2=$data['comment'];
+        $number=$data['password'];
+    }
+    elseif($numberpass!==$data['password'])
+    {
+        echo ("パスワードが違います"."<br>");
+    }
+
+}    
+}
+}
+
+//______________________________________________________________________________
+
+if(!empty($_POST["name"])&&!empty($_POST["str"]))
+
+
+{
+    if(empty($_POST["num"]))
+    
+    {
+
+//データベースに接続
+    $dsn='データベース名';//データベース名など
+    $user = 'ユーザー名'; //ユーザー名
+    $password = 'パスワード';//パスワード
+    
+    $pdo=new PDO($dsn, $user, $password, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING));
+    $sql = $pdo -> prepare("INSERT INTO ASANOtb (name,comment,date,password) VALUES (:name,:comment,CURRENT_TIME,:password)");
+    $sql -> bindParam(':name', $name, PDO::PARAM_STR);
+    $sql -> bindParam(':comment', $comment, PDO::PARAM_STR);
+    $sql -> bindParam(':password', $password, PDO::PARAM_STR);
+    $name=$_POST["name"];
+    $comment=$_POST["str"];
+    $password=$_POST["pass"];
+    $sql -> execute(); 
+  
+    }  
+//___編集___________________________________________________________________________
+
+else
+
+{
+
+//データベースに接続
+    $dsn='データベース名';//データベース名など
+    $user = 'ユーザー名'; //ユーザー名
+    $password = 'パスワード';//パスワード
+    
+    $pdo=new PDO($dsn, $user, $password, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING));
+    $id=$_POST["num"];
+    $name=$_POST["name"];
+    $comment=$_POST["str"];
+    $password=$_POST["pass"];
+    
+    $sql='UPDATE ASANOtb SET name=:name, comment=:comment WHERE id=:id';//??
+    $stmt=$pdo->prepare($sql);
+    $stmt->bindparam(':name',$name,PDO::PARAM_STR);
+    $stmt->bindparam(':comment',$comment,PDO::PARAM_STR);
+    // $stmt->bindparam(':password',$password,PDO::PARAM_STR);
+    $stmt->bindparam(':id',$id,PDO::PARAM_INT);
+    $stmt->execute();
+}
+}
+//___削除＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
+
+if(!empty($nums)&&$numspass==$numspass2)
+
+{
+    
+    echo "できない";
+    
+ $dsn='データベース名';//データベース名など
+ $user = 'ユーザー名'; //ユーザー名
+ $password = 'パスワード';//パスワード   
+ 
+ $pdo=new PDO($dsn, $user, $password, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING));
+ $id=$nums;
+ $sql='delete from ASANOtb where id=:id';
+ $stmt=$pdo->prepare($sql);
+ $stmt->bindparam(':id',$id,PDO::PARAM_INT);
+ $stmt->execute();
+
+}
+
+elseif(!empty($nums)&&$numspass!==$numspass2)
+
+{
+    echo ("パスワードが違います");
+    
+}
+
+
+
+//______________________________________________________________________________
+
+?>
+
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>mission_5-01</title>
+
+</head>
+
+<body>
+    
+<div style="background-color:#f5deb3;"><br><span style="color:#542D24;font-size:19px">○新規投稿</span>
+
+<form action=""method="post">
+
+ <input type="text"name="str"placeholder="コメント" value="<?php if(isset($str2)){echo $str2;}?>"><br>
+   
+ <input type="text" name="name"placeholder="お名前" value="<?php if(isset($name2)){echo $name2;}?>"><br>
+ 
+ <input type="text" name="pass"placeholder="パスワード">
+ 
+ <input type="submit" name="submits"value="投稿" ><br>
+ 
+ <input type="hidden"name="num"placeholder="編集したい投稿番号"value="<?php if(isset($number1)){echo $number1;}?>">
+<br> 
+</form>
+
+<span style="color:#542D24;font-size:19px">○削除</span>
+<form action=""method="post">
+ <input type="number"name="nums"placeholder="削除番号">
+ <input type="text" name="numspass"placeholder="パスワード">
+ <input type=submit "name"="submit" value="削除"><br><br>
+</form>
+
+<span style="color:#542D24;font-size:19px">○編集</span>
+<form action=""method="post">
+<input type="number"name="number"placeholder="編集番号">
+<input type="text" name="numberpass"placeholder="パスワード">
+<input type="submit" "name"="submits"value="編集" ><br>
+</form><br></div>
+
+<?php
+  //データベース接続
+    $dsn='データベース名';//データベース名など
+    $user = 'ユーザー名'; //ユーザー名
+    $password = 'パスワード';//パスワード
+    
+    $pdo=new PDO($dsn, $user, $password, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING));
+    
+     //データの表示
+    
+    $sql = 'SELECT * FROM ASANOtb';//ASANOtbからデータの取り出し
+    $stmt = $pdo->query($sql);
+    $results = $stmt->fetchAll();
+    foreach ($results as $row){
+        //$rowの中にはテーブルのカラム名が入る
+        echo "<hr>";
+        echo '投稿番号:'.$row['id']."<br>";
+        echo '名前:'.$row['name']."<br>";
+        echo 'コメント:'.$row['comment']."<br>";
+        echo '日時:'.$row['date'].'<br>';
+        echo "<hr>";
+    }
+    
+?>
+</body>
+</html> 
